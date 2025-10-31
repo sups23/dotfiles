@@ -1,31 +1,15 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/home/sups/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="powerlevel10k/powerlevel10k"
-# Import colorscheme from 'wal' asynchronously
-# &   # Run the process in the background.
-# ( ) # Hide shell job control messages.
-(cat ~/.cache/wal/sequences &)
+ZSH_THEME="robbyrussell"
 
-# Alternative (blocks terminal for 0-3ms)
-cat ~/.cache/wal/sequences
-
-# To add support for TTYs this line can be optionally added.
-source ~/.cache/wal/colors-tty.sh
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in $ZSH/themes/
@@ -39,14 +23,13 @@ source ~/.cache/wal/colors-tty.sh
 # Case-sensitive completion must be off. _ and - will be interchangeable.
 # HYPHEN_INSENSITIVE="true"
 
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
-
-# Uncomment the following line to automatically update without prompting.
-# DISABLE_UPDATE_PROMPT="true"
+# Uncomment one of the following lines to change the auto-update behavior
+# zstyle ':omz:update' mode disabled  # disable automatic updates
+# zstyle ':omz:update' mode auto      # update automatically without asking
+# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
 # Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
+# zstyle ':omz:update' frequency 13
 
 # Uncomment the following line if pasting URLs and other text is messed up.
 # DISABLE_MAGIC_FUNCTIONS="true"
@@ -61,6 +44,9 @@ source ~/.cache/wal/colors-tty.sh
 # ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
+# You can also set it to another string to have that shown instead of the default red dots.
+# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
+# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
 # COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
@@ -84,7 +70,7 @@ source ~/.cache/wal/colors-tty.sh
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(git zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -117,50 +103,113 @@ source $ZSH/oh-my-zsh.sh
 alias cp="cp -i"                                                # Confirm before overwriting something
 alias df='df -h'                                                # Human-readable sizes
 alias free='free -m'                                            # Show sizes in MB
+alias cat='bat'
+alias vi='nvim'
+alias ls='exa'
+alias ll='exa -alh'
+alias tree='exa --tree'
+alias rg='ranger'
+alias zz='z -'
+alias cc='qalc'
+alias py='python3'
 
+alias sai='sudo apt install'
 alias nf="neofetch"
 alias mhost="sudo nvim /etc/hosts"
+alias xc="xclip -sel clip"
 
 alias zipher="zip --password xxx files.zip files/* && rm -rf files/*"
 
 alias c="clear"
+alias mp="mousepad"
+alias wifion="nmcli radio wifi on"
+alias wifioff="nmcli radio wifi off"
+
+alias creq="composer require"
+
 alias pa="php artisan"
 alias pas="php artisan serve"
 alias pam="php artisan migrate"
 alias pat="php artisan tinker"
 alias pam:f="php artisan migrate:fresh"
 alias pads="php artisan db:seed"
+alias pam:r1="php artisan migrate:rollback --step=1"
+
+alias nrs="npm run start"
+
 alias ga.="git add ."
+alias gam="git add . && git commit -m"
 alias gcm="git commit -m"
 alias gpo="git push origin"
-alias gitu='git add . && git commit && git push'
 alias gpull='git pull origin'
 alias gdiff='git diff --name-only'
+alias gpoh="git push origin HEAD"
+alias gc="git checkout"
 
-alias code="/var/lib/flatpak/exports/bin/com.visualstudio.code"
 
-alias httpd:s="sudo systemctl start httpd"
-alias httpd:st="sudo systemctl status httpd"
-alias httpd:r="sudo systemctl restart httpd"
+# alias httpd:s="sudo systemctl start httpd"
+# alias httpd:st="sudo systemctl status httpd"
+# alias httpd:r="sudo systemctl restart httpd"
 
-alias os:s="sudo systemctl start openswan"
-alias os:st="sudo systemctl status openswan"
-alias os:r="sudo systemctl restart openswan"
 
-alias xl2:s="sudo systemctl start xl2tpd"
-alias xl2:st="sudo systemctl status xl2tpd"
-alias xl2:r="sudo systemctl restart xl2tpd"
-
-alias ipsec:up:at-vpn="sudo ipsec auto --up atvpn"
-
-alias at-vpn:connect="sudo sh -c 'echo \"c vpn-connection\" > /var/run/xl2tpd/l2tp-control'"
-alias at-vpn:disconnect="sudo sh -c 'echo \"d vpn-connection\" > /var/run/xl2tpd/l2tp-control'"
-
-alias ipsec:st="sudo ipsec auto --status"
-alias iproute:add:at:10="sudo ip route add 45.33.34.110 via 192.168.42.10 dev ppp0"
-alias iproute:add:at:11="sudo ip route add 45.33.34.110 via 192.168.42.11 dev ppp0"
+# alias apache:s="sudo systemctl start apache2"
+# alias apache:st="sudo systemctl status apache2"
+# alias apache:r="sudo systemctl restart apache2"
 
 alias cdw="cd /mnt/stuffs/WORK"
+alias check-batt="upower -i /org/freedesktop/UPower/devices/battery_BAT0"
+alias dfh="df -h"
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# Zoxide
+
+_z_cd() {
+    cd "$@" || return "$?"
+
+    if [ "$_ZO_ECHO" = "1" ]; then
+        echo "$PWD"
+    fi
+}
+
+z() {
+    if [ "$#" -eq 0 ]; then
+        _z_cd ~
+    elif [ "$#" -eq 1 ] && [ "$1" = '-' ]; then
+        if [ -n "$OLDPWD" ]; then
+            _z_cd "$OLDPWD"
+        else
+            echo 'zoxide: $OLDPWD is not set'
+            return 1
+        fi
+    else
+        _zoxide_result="$(zoxide query -- "$@")" && _z_cd "$_zoxide_result"
+    fi
+}
+
+zi() {
+    _zoxide_result="$(zoxide query -i -- "$@")" && _z_cd "$_zoxide_result"
+}
+
+
+alias za='zoxide add'
+
+alias zq='zoxide query'
+alias zqi='zoxide query -i'
+
+alias zr='zoxide remove'
+zri() {
+    _zoxide_result="$(zoxide query -i -- "$@")" && zoxide remove "$_zoxide_result"
+}
+
+
+_zoxide_hook() {
+    zoxide add "$(pwd -L)"
+}
+
+chpwd_functions=(${chpwd_functions[@]} "_zoxide_hook")
+
+# bun completions
+[ -s "/home/sups/.bun/_bun" ] && source "/home/sups/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
