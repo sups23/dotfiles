@@ -100,8 +100,9 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 ## Alias section
+alias c="clear"
 alias cp="cp -i"                                                # Confirm before overwriting something
-alias df='df -h'                                                # Human-readable sizes
+alias dfh='df -h'                                                # Human-readable sizes
 alias free='free -m'                                            # Show sizes in MB
 alias cat='bat'
 alias vi='nvim'
@@ -110,20 +111,15 @@ alias ll='exa -alh'
 alias tree='exa --tree'
 alias rg='ranger'
 alias zz='z -'
-alias cc='qalc'
 alias py='python3'
 
-alias sai='sudo apt install'
-alias nf="neofetch"
+alias src='source ~/.zshrc'
+
+alias ff="fastfetch"
 alias mhost="sudo nvim /etc/hosts"
 alias xc="xclip -sel clip"
 
-alias zipher="zip --password xxx files.zip files/* && rm -rf files/*"
-
-alias c="clear"
-alias mp="mousepad"
-alias wifion="nmcli radio wifi on"
-alias wifioff="nmcli radio wifi off"
+alias cj='pbpaste | perl -0777 -pe "s/\r\n?/\n/g; s/[ \t]*\n+[ \t]*/, /g; s/\t+/ /g; s/^\s+|\s+$//g" | pbcopy'
 
 alias creq="composer require"
 
@@ -136,6 +132,7 @@ alias pads="php artisan db:seed"
 alias pam:r1="php artisan migrate:rollback --step=1"
 
 alias nrs="npm run start"
+alias nr="npm run"
 
 alias ga.="git add ."
 alias gam="git add . && git commit -m"
@@ -145,71 +142,58 @@ alias gpull='git pull origin'
 alias gdiff='git diff --name-only'
 alias gpoh="git push origin HEAD"
 alias gc="git checkout"
+alias gc.="git checkout ."
+alias gfa="git fetch &&"
+alias g-="git checkout -"
+alias glogm="git log --pretty=format:'%s' -n 10 | sed -E 's/^UW-[0-9]+[[:space:]]+//'"
+alias blp82="brew unlink php && brew link php@8.2" 
+alias blp8="brew unlink php@8.2 && brew link php"
 
+killport() {
+  if [ -z "$1" ]; then
+    echo "Usage: killport <port>"
+    return 1
+  fi
 
-# alias httpd:s="sudo systemctl start httpd"
-# alias httpd:st="sudo systemctl status httpd"
-# alias httpd:r="sudo systemctl restart httpd"
+  local port="$1"
+  local pids
 
+  pids=$(lsof -ti :"$port")
 
-# alias apache:s="sudo systemctl start apache2"
-# alias apache:st="sudo systemctl status apache2"
-# alias apache:r="sudo systemctl restart apache2"
+  if [ -z "$pids" ]; then
+    echo "No process found on port $port"
+    return 0
+  fi
 
-alias cdw="cd /mnt/stuffs/WORK"
-alias check-batt="upower -i /org/freedesktop/UPower/devices/battery_BAT0"
-alias dfh="df -h"
+  echo "Process(es) using port $port:"
+  echo "----------------------------------------"
+  lsof -i :"$port" -P -n
+  echo "----------------------------------------"
 
-# Zoxide
-
-_z_cd() {
-    cd "$@" || return "$?"
-
-    if [ "$_ZO_ECHO" = "1" ]; then
-        echo "$PWD"
-    fi
+  read "?Force kill these process(es)? (y/N): " confirm
+  if [[ "$confirm" =~ ^[Yy]$ ]]; then
+    kill -9 $pids
+    echo "Killed process(es): $pids"
+  else
+    echo "Aborted."
+  fi
 }
 
-z() {
-    if [ "$#" -eq 0 ]; then
-        _z_cd ~
-    elif [ "$#" -eq 1 ] && [ "$1" = '-' ]; then
-        if [ -n "$OLDPWD" ]; then
-            _z_cd "$OLDPWD"
-        else
-            echo 'zoxide: $OLDPWD is not set'
-            return 1
-        fi
-    else
-        _zoxide_result="$(zoxide query -- "$@")" && _z_cd "$_zoxide_result"
-    fi
-}
+# zoxide (smart cd replacement)
+eval "$(zoxide init zsh)"
 
-zi() {
-    _zoxide_result="$(zoxide query -i -- "$@")" && _z_cd "$_zoxide_result"
-}
+# Java
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-8.jdk/Contents/Home
 
+# Hadoop
+export HADOOP_HOME=~/softwarica/lib/hadoop-3.3.6
+export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+export PATH=$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
 
-alias za='zoxide add'
+# Spark
+export SPARK_HOME=~/softwarica/lib/spark-3.5.8-bin-hadoop3
+export PATH=$SPARK_HOME/bin:$PATH
 
-alias zq='zoxide query'
-alias zqi='zoxide query -i'
-
-alias zr='zoxide remove'
-zri() {
-    _zoxide_result="$(zoxide query -i -- "$@")" && zoxide remove "$_zoxide_result"
-}
-
-
-_zoxide_hook() {
-    zoxide add "$(pwd -L)"
-}
-
-chpwd_functions=(${chpwd_functions[@]} "_zoxide_hook")
-
-# bun completions
-[ -s "/home/sups/.bun/_bun" ] && source "/home/sups/.bun/_bun"
-
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
+# Hive
+export HIVE_HOME=~/softwarica/lib/hive
+export PATH=$HIVE_HOME/bin:$PATH
